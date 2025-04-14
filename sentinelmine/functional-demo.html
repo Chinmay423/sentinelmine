@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentinelMine Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2a69ac;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+            --text-color: #2d3748;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+        }
+        
+        .sidebar-logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-logo svg {
+            margin-right: 10px;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .sidebar-nav li.active {
+            background-color: var(--secondary-color);
+        }
+        
+        .main-content {
+            padding: 20px;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 20px;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .metric-card {
+            text-align: center;
+            position: relative;
+        }
+        
+        .refresh-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #718096;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            background-color: #edf2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        
+        .status-high {
+            color: var(--danger-color);
+        }
+        
+        .status-medium {
+            color: var(--warning-color);
+        }
+        
+        .status-low {
+            color: var(--success-color);
+        }
+        
+        .alerts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .alerts-table th, .alerts-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .alerts-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-high {
+            background-color: #FED7D7;
+            color: #C53030;
+        }
+        
+        .badge-medium {
+            background-color: #FEEBC8;
+            color: #C05621;
+        }
+        
+        .badge-low {
+            background-color: #C6F6D5;
+            color: #2F855A;
+        }
+        
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .login-form {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 10px;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--secondary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .filter-container select {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #718096;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .notice {
+            background-color: #ebf8ff;
+            border-left: 4px solid var(--secondary-color);
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div id="login-screen" class="login-overlay">
+        <div class="login-form">
+            <h2>SentinelMine Login</h2>
+            <div class="notice">
+                This is a simulated login. Use username: <strong>analyst1</strong> and password: <strong>password123</strong>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" value="analyst1">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" value="password123">
+            </div>
+            <button id="login-btn" class="btn btn-primary">Sign In</button>
+            <div id="login-error" class="error-message" style="display: none;">Invalid credentials. Please try again.</div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                    <path d="M12 8V16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8 12H16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                SentinelMine
+            </div>
+            <ul class="sidebar-nav">
+                <li class="active" data-page="dashboard">Dashboard</li>
+                <li data-page="threat-analysis">Threat Analysis</li>
+                <li data-page="intelligence">Intelligence</li>
+                <li data-page="predictions">Predictions</li>
+                <li data-page="reports">Reports</li>
+                <li data-page="settings">Settings</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="navbar">
+                <div>
+                    <h2 id="page-title">Security Dashboard</h2>
+                </div>
+                <div class="user-profile">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle fill='%23718096' cx='100' cy='100' r='100'/%3E%3Ccircle fill='%232D3748' cx='100' cy='80' r='40'/%3E%3Cpath fill='%232D3748' d='M100 120 C60 120 40 160 40 200 L160 200 C160 160 140 120 100 120Z'/%3E%3C/svg%3E" alt="User Profile">
+                    <div>
+                        <div id="username-display">analyst1</div>
+                        <div style="font-size: 12px; color: #718096;">Security Analyst <button id="logout-btn" class="logout-btn">(Logout)</button></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dashboard-page">
+                <div class="dashboard-header">
+                    <h1>Security Operations Overview</h1>
+                    <p>Real-time metrics and threat intelligence - Last updated: <span id="current-time">April 14, 2023 14:30:45</span></p>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card metric-card">
+                        <button class="refresh-btn" data-metric="total-events">⟳</button>
+                        <div class="metric-label">TOTAL EVENTS</div>
+                        <div id="total-events" class="metric-value">12,547</div>
+                        <div id="total-events-change" style="color: var(--success-color);">+2.4% vs yesterday</div>
+                    </div>
+                    <div class="card metric-card">
+                        <button class="refresh-btn" data-metric="active-threats">⟳</button>
+                        <div class="metric-label">ACTIVE THREATS</div>
+                        <div id="active-threats" class="metric-value status-medium">27</div>
+                        <div id="active-threats-change" style="color: var(--danger-color);">+5 in last hour</div>
+                    </div>
+                    <div class="card metric-card">
+                        <button class="refresh-btn" data-metric="threat-level">⟳</button>
+                        <div class="metric-label">THREAT LEVEL</div>
+                        <div id="threat-level" class="metric-value status-medium">MEDIUM</div>
+                        <div>Based on 24h analysis</div>
+                    </div>
+                    <div class="card metric-card">
+                        <button class="refresh-btn" data-metric="prediction-accuracy">⟳</button>
+                        <div class="metric-label">PREDICTION ACCURACY</div>
+                        <div id="prediction-accuracy" class="metric-value">94.2%</div>
+                        <div id="prediction-accuracy-change" style="color: var(--success-color);">+1.7% vs last week</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="filter-container">
+                        <select id="timeline-period">
+                            <option value="day">Last 24 hours</option>
+                            <option value="week">Last 7 days</option>
+                            <option value="month">Last 30 days</option>
+                        </select>
+                        <select id="timeline-type">
+                            <option value="all">All events</option>
+                            <option value="high">High severity only</option>
+                            <option value="medium">Medium severity only</option>
+                            <option value="low">Low severity only</option>
+                        </select>
+                    </div>
+                    <h2>Threat Activity Timeline</h2>
+                    <div class="chart-container" id="timeline-chart-container">
+                        <div class="chart-placeholder" id="timeline-chart">
+                            [Interactive Threat Timeline Chart]
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                    <div class="card">
+                        <h2>Security Incidents by Type</h2>
+                        <div class="chart-container" id="incidents-chart-container">
+                            <div class="chart-placeholder" id="incidents-chart">
+                                [Security Incidents Pie Chart]
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2>Geographic Distribution</h2>
+                        <div class="chart-container" id="geo-chart-container">
+                            <div class="chart-placeholder" id="geo-chart">
+                                [Threat Geographic Map]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <div class="filter-container">
+                        <select id="alerts-filter">
+                            <option value="all">All alerts</option>
+                            <option value="active">Active only</option>
+                            <option value="investigating">Investigating only</option>
+                            <option value="resolved">Resolved only</option>
+                        </select>
+                    </div>
+                    <h2>Recent Alerts</h2>
+                    <table class="alerts-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Source</th>
+                                <th>Description</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-table-body">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Other pages would be hidden initially -->
+            <div id="threat-analysis-page" style="display: none;">
+                <div class="dashboard-header">
+                    <h1>Threat Analysis</h1>
+                    <p>Advanced analysis tools and threat intelligence insights</p>
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tabs">
+                        <div class="tab active">Network Analysis</div>
+                        <div class="tab">Host Analysis</div>
+                        <div class="tab">User Activities</div>
+                        <div class="tab">Attack Patterns</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>Network Traffic Analysis</h2>
+                    <div class="chart-container" id="network-chart-container">
+                        <div class="chart-placeholder">
+                            [Network Traffic Analysis Chart]
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="predictions-page" style="display: none;">
+                <div class="dashboard-header">
+                    <h1>Predictive Analytics</h1>
+                    <p>AI-powered threat forecasting and anomaly detection</p>
+                </div>
+                
+                <div class="card">
+                    <h2>Threat Prediction Model</h2>
+                    <div class="filter-container">
+                        <select id="prediction-timeframe">
+                            <option value="24h">Next 24 hours</option>
+                            <option value="72h">Next 72 hours</option>
+                            <option value="7d">Next 7 days</option>
+                        </select>
+                    </div>
+                    <div class="chart-container" id="prediction-chart-container">
+                        <div class="chart-placeholder">
+                            [Threat Prediction Chart]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mock API data
+        const mockData = {
+            metrics: {
+                totalEvents: {
+                    current: 12547,
+                    change: "+2.4%"
+                },
+                activeThreats: {
+                    current: 27,
+                    change: "+5"
+                },
+                threatLevel: "MEDIUM",
+                predictionAccuracy: {
+                    current: 94.2,
+                    change: "+1.7%"
+                }
+            },
+            alerts: [
+                {
+                    id: 1,
+                    time: "14:25:36",
+                    source: "192.168.1.102",
+                    description: "Multiple failed authentication attempts",
+                    severity: "high",
+                    status: "Active"
+                },
+                {
+                    id: 2,
+                    time: "13:56:12",
+                    source: "10.0.0.45",
+                    description: "Unusual outbound data transfer",
+                    severity: "medium",
+                    status: "Investigating"
+                },
+                {
+                    id: 3,
+                    time: "13:22:05",
+                    source: "192.168.1.56",
+                    description: "Potential policy violation",
+                    severity: "low",
+                    status: "Resolved"
+                },
+                {
+                    id: 4,
+                    time: "12:48:59",
+                    source: "10.0.0.17",
+                    description: "Anomalous process execution",
+                    severity: "medium",
+                    status: "Active"
+                },
+                {
+                    id: 5,
+                    time: "11:32:41",
+                    source: "192.168.1.205",
+                    description: "Suspicious network connection",
+                    severity: "high",
+                    status: "Mitigated"
+                },
+                {
+                    id: 6,
+                    time: "10:15:22",
+                    source: "10.0.0.88",
+                    description: "Unauthorized access attempt",
+                    severity: "high",
+                    status: "Active"
+                },
+                {
+                    id: 7,
+                    time: "09:42:17",
+                    source: "192.168.1.75",
+                    description: "Malware detection alert",
+                    severity: "high",
+                    status: "Investigating"
+                }
+            ],
+            users: [
+                {
+                    username: "analyst1",
+                    password: "password123", // Never do this in real production code!
+                    role: "Security Analyst"
+                },
+                {
+                    username: "admin",
+                    password: "admin123",
+                    role: "Administrator"
+                }
+            ]
+        };
+        
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('login-error');
+        const usernameDisplay = document.getElementById('username-display');
+        const refreshButtons = document.querySelectorAll('.refresh-btn');
+        const alertsTableBody = document.getElementById('alerts-table-body');
+        const alertsFilter = document.getElementById('alerts-filter');
+        const navItems = document.querySelectorAll('.sidebar-nav li');
+        const timelinePeriod = document.getElementById('timeline-period');
+        const timelineType = document.getElementById('timeline-type');
+        const pageTitle = document.getElementById('page-title');
+        
+        // Pages
+        const dashboardPage = document.getElementById('dashboard-page');
+        const threatAnalysisPage = document.getElementById('threat-analysis-page');
+        const predictionsPage = document.getElementById('predictions-page');
+        
+        // Functions
+        function updateCurrentTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('current-time').textContent = now.toLocaleDateString('en-US', options);
+        }
+        
+        function displayMetrics() {
+            document.getElementById('total-events').textContent = mockData.metrics.totalEvents.current.toLocaleString();
+            document.getElementById('total-events-change').textContent = mockData.metrics.totalEvents.change + " vs yesterday";
+            
+            document.getElementById('active-threats').textContent = mockData.metrics.activeThreats.current;
+            document.getElementById('active-threats-change').textContent = mockData.metrics.activeThreats.change + " in last hour";
+            
+            document.getElementById('threat-level').textContent = mockData.metrics.threatLevel;
+            document.getElementById('threat-level').className = "metric-value status-" + mockData.metrics.threatLevel.toLowerCase();
+            
+            document.getElementById('prediction-accuracy').textContent = mockData.metrics.predictionAccuracy.current + "%";
+            document.getElementById('prediction-accuracy-change').textContent = mockData.metrics.predictionAccuracy.change + " vs last week";
+        }
+        
+        function displayAlerts(filter = 'all') {
+            alertsTableBody.innerHTML = '';
+            
+            let filteredAlerts = mockData.alerts;
+            if (filter !== 'all') {
+                filteredAlerts = mockData.alerts.filter(alert => 
+                    alert.status.toLowerCase() === filter.toLowerCase()
+                );
+            }
+            
+            filteredAlerts.forEach(alert => {
+                const row = document.createElement('tr');
+                
+                const timeCell = document.createElement('td');
+                timeCell.textContent = alert.time;
+                
+                const sourceCell = document.createElement('td');
+                sourceCell.textContent = alert.source;
+                
+                const descriptionCell = document.createElement('td');
+                descriptionCell.textContent = alert.description;
+                
+                const severityCell = document.createElement('td');
+                const severityBadge = document.createElement('span');
+                severityBadge.className = `badge badge-${alert.severity}`;
+                severityBadge.textContent = alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1);
+                severityCell.appendChild(severityBadge);
+                
+                const statusCell = document.createElement('td');
+                statusCell.textContent = alert.status;
+                
+                const actionsCell = document.createElement('td');
+                const investigateBtn = document.createElement('button');
+                investigateBtn.className = 'btn btn-primary';
+                investigateBtn.style.padding = '4px 8px';
+                investigateBtn.style.fontSize = '12px';
+                investigateBtn.textContent = 'Investigate';
+                investigateBtn.addEventListener('click', () => {
+                    alert(`Investigating alert #${alert.id}: ${alert.description}`);
+                });
+                actionsCell.appendChild(investigateBtn);
+                
+                row.appendChild(timeCell);
+                row.appendChild(sourceCell);
+                row.appendChild(descriptionCell);
+                row.appendChild(severityCell);
+                row.appendChild(statusCell);
+                row.appendChild(actionsCell);
+                
+                alertsTableBody.appendChild(row);
+            });
+        }
+        
+        function refreshMetric(metricName) {
+            const metricElement = document.getElementById(metricName);
+            if (!metricElement) return;
+            
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            metricElement.parentNode.appendChild(spinner);
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                spinner.remove();
+                
+                // Generate new random values
+                switch(metricName) {
+                    case 'total-events':
+                        const newValue = Math.floor(mockData.metrics.totalEvents.current * (0.95 + Math.random() * 0.1));
+                        mockData.metrics.totalEvents.current = newValue;
+                        const totalEventsChange = ((Math.random() * 5) - 2).toFixed(1);
+                        mockData.metrics.totalEvents.change = (totalEventsChange >= 0 ? "+" : "") + totalEventsChange + "%";
+                        break;
+                        
+                    case 'active-threats':
+                        const newThreats = Math.floor(20 + Math.random() * 15);
+                        mockData.metrics.activeThreats.current = newThreats;
+                        const threatsChange = Math.floor((Math.random() * 9) - 4);
+                        mockData.metrics.activeThreats.change = (threatsChange >= 0 ? "+" : "") + threatsChange;
+                        break;
+                        
+                    case 'threat-level':
+                        const levels = ["LOW", "MEDIUM", "HIGH"];
+                        const levelIndex = Math.floor(Math.random() * 3);
+                        mockData.metrics.threatLevel = levels[levelIndex];
+                        break;
+                        
+                    case 'prediction-accuracy':
+                        const newAccuracy = (90 + Math.random() * 8).toFixed(1);
+                        mockData.metrics.predictionAccuracy.current = newAccuracy;
+                        const accuracyChange = ((Math.random() * 3) - 1).toFixed(1);
+                        mockData.metrics.predictionAccuracy.change = (accuracyChange >= 0 ? "+" : "") + accuracyChange + "%";
+                        break;
+                }
+                
+                // Update the display
+                displayMetrics();
+                
+            }, 1200);
+        }
+        
+        function showPage(pageName) {
+            // Hide all pages
+            dashboardPage.style.display = 'none';
+            threatAnalysisPage.style.display = 'none';
+            predictionsPage.style.display = 'none';
+            
+            // Update page title
+            switch(pageName) {
+                case 'dashboard':
+                    pageTitle.textContent = 'Security Dashboard';
+                    dashboardPage.style.display = 'block';
+                    break;
+                case 'threat-analysis':
+                    pageTitle.textContent = 'Threat Analysis';
+                    threatAnalysisPage.style.display = 'block';
+                    break;
+                case 'predictions':
+                    pageTitle.textContent = 'Predictive Analytics';
+                    predictionsPage.style.display = 'block';
+                    break;
+                default:
+                    pageTitle.textContent = pageName.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    dashboardPage.style.display = 'block';
+            }
+            
+            // Update active nav item
+            navItems.forEach(item => {
+                if (item.dataset.page === pageName) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        function simulateChartRefresh(chartContainerId) {
+            const container = document.getElementById(chartContainerId);
+            if (!container) return;
+            
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            container.appendChild(spinner);
+            
+            setTimeout(() => {
+                spinner.remove();
+            }, 800);
+        }
+        
+        // Event Listeners
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            
+            // Simulate API login
+            const user = mockData.users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                loginScreen.style.display = 'none';
+                usernameDisplay.textContent = username;
+                loginError.style.display = 'none';
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            loginScreen.style.display = 'flex';
+            usernameInput.value = '';
+            passwordInput.value = '';
+        });
+        
+        refreshButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const metricName = button.dataset.metric;
+                refreshMetric(metricName);
+            });
+        });
+        
+        alertsFilter.addEventListener('change', () => {
+            displayAlerts(alertsFilter.value);
+        });
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const pageName = item.dataset.page;
+                showPage(pageName);
+            });
+        });
+        
+        timelinePeriod.addEventListener('change', () => {
+            simulateChartRefresh('timeline-chart-container');
+        });
+        
+        timelineType.addEventListener('change', () => {
+            simulateChartRefresh('timeline-chart-container');
+        });
+        
+        // Initialization
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+        displayMetrics();
+        displayAlerts();
+        
+        // Add event listeners to simulate chart updates
+        document.getElementById('timeline-period').addEventListener('change', function() {
+            simulateChartRefresh('timeline-chart-container');
+        });
+        
+        document.getElementById('timeline-type').addEventListener('change', function() {
+            simulateChartRefresh('timeline-chart-container');
+        });
+
+        // Simulate occasional metric updates
+        setInterval(() => {
+            const metrics = ['total-events', 'active-threats', 'threat-level', 'prediction-accuracy'];
+            const randomMetric = metrics[Math.floor(Math.random() * metrics.length)];
+            refreshMetric(randomMetric);
+        }, 60000); // Every minute
+    </script>
+</body>
+</html> 

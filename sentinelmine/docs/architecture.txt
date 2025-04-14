@@ -1,0 +1,106 @@
+SentinelMine System Architecture
+==============================
+
+                                  +-------------------+
+                                  |                   |
+                                  |   End Users &     |
+                                  |   Analysts        |
+                                  |                   |
+                                  +---------+---------+
+                                            |
+                                            | HTTPS / TLS
+                                            v
+  +--------------------------------------------------------------------+
+  |                                                                    |
+  |                     Secure Presentation Layer                       |
+  |                                                                    |
+  |   +-----------------+    +------------------+    +--------------+  |
+  |   |                 |    |                  |    |              |  |
+  |   | React Frontend  |    | Dashboard UI     |    | Admin UI     |  |
+  |   |                 |    |                  |    |              |  |
+  |   +-----------------+    +------------------+    +--------------+  |
+  |                                                                    |
+  +--------------------------------------------------------------------+
+                              |
+                          API Gateway
+                              |
+  +--------------------------------------------------------------------+
+  |                                                                    |
+  |                      Processing Layer                              |
+  |                                                                    |
+  |  +----------------+  +----------------+  +--------------------+    |
+  |  |                |  |                |  |                    |    |
+  |  | Authentication |  | Prediction API |  | Analytics API      |    |
+  |  | Service        |  |                |  |                    |    |
+  |  +----------------+  +----------------+  +--------------------+    |
+  |                                                                    |
+  +--------------------------------------------------------------------+
+             |                  |                       |
+             v                  v                       v
+  +--------------------------------------------------------------------+
+  |                                                                    |
+  |                     Intelligence Layer                             |
+  |                                                                    |
+  |  +----------------+  +----------------+  +--------------------+    |
+  |  |                |  |                |  |                    |    |
+  |  | ML Service     |  | Deep Learning |  | Anomaly Detection  |    |
+  |  |                |  | Models        |  |                    |    |
+  |  +----------------+  +----------------+  +--------------------+    |
+  |                                                                    |
+  +--------------------------------------------------------------------+
+             |                   |                       |
+             v                   v                       v
+  +--------------------------------------------------------------------+
+  |                                                                    |
+  |                      Storage Layer                                 |
+  |                                                                    |
+  |   +----------------+   +----------------+   +------------------+   |
+  |   |                |   |                |   |                  |   |
+  |   | PostgreSQL DB  |   | Redis Cache    |   | Blockchain       |   |
+  |   | (Encrypted)    |   |                |   | Verification     |   |
+  |   +----------------+   +----------------+   +------------------+   |
+  |                                                                    |
+  +--------------------------------------------------------------------+
+             |                  |                       |
+             v                  v                       v
+  +--------------------------------------------------------------------+
+  |                                                                    |
+  |                     Data Ingestion Layer                           |
+  |                                                                    |
+  |  +----------------+  +----------------+  +--------------------+    |
+  |  |                |  |                |  |                    |    |
+  |  | OSINT Feeds    |  | Secure APIs    |  | Intelligence Data  |    |
+  |  | Collectors     |  | Connectors     |  | Ingestion          |    |
+  |  +----------------+  +----------------+  +--------------------+    |
+  |                                                                    |
+  +--------------------------------------------------------------------+
+
+Security Features:
+-----------------
+1. Zero-trust security model across all layers
+2. End-to-end encryption for all data in transit and at rest
+3. Multi-factor authentication for all access points
+4. Blockchain-based immutable audit trails
+5. Federated machine learning for data sovereignty
+6. Hardware security module (HSM) integration
+7. Continuous security monitoring
+
+Deployment Models:
+-----------------
+1. Air-gapped deployment for highest security requirements
+2. Hybrid deployment with secured cloud components
+3. Classified cloud environment deployment
+
+Components Communication:
+-----------------------
+- RESTful APIs with JWT authentication
+- WebSockets for real-time updates
+- Message queues for asynchronous processing
+- Blockchain for verification and audit
+
+Scalability:
+-----------
+- Horizontal scaling of all components
+- Containerized microservices architecture
+- Kubernetes orchestration
+- Automated CI/CD pipeline 

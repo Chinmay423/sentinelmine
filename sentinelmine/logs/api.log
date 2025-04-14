@@ -1,0 +1,8 @@
+npm error code ENOENT
+npm error syscall open
+npm error path C:\Users\M\Desktop\sentinelmine\src\api\package.json
+npm error errno -4058
+npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open 'C:\Users\M\Desktop\sentinelmine\src\api\package.json'
+npm error enoent This is related to npm not being able to find a file.
+npm error enoent
+npm error A complete log of this run can be found in: C:\Users\M\AppData\Local\npm-cache\_logs\2025-04-14T10_56_59_197Z-debug-0.log

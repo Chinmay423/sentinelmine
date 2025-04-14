@@ -1,0 +1,35 @@
+# Test framework
+pytest==7.4.0
+pytest-cov==4.1.0
+pytest-xdist==3.3.1
+pytest-mock==3.11.1
+
+# API testing
+requests==2.31.0
+responses==0.23.3
+
+# Frontend testing
+selenium==4.11.2
+pytest-selenium==4.0.1
+
+# ML testing
+numpy==1.24.3
+scikit-learn==1.3.0
+pandas==2.0.3
+
+# Performance testing
+locust==2.16.1
+
+# Security testing
+PyJWT==2.8.0
+python-dotenv==1.0.0
+pytest-benchmark==4.0.0
+
+# Mock data generation
+faker==19.3.1
+
+# Code quality
+black==23.7.0
+isort==5.12.0
+flake8==6.0.0
+mypy==1.4.1 
